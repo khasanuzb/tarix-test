@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jahon Tarixi Testlari | Yuldashev Kh</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --text: #e8e4dc;
+    --muted: #7a7670;
+    --correct: #4a9e6b;
+    --wrong: #b84a4a;
+    --correct-bg: #1a3326;
+    --wrong-bg: #331a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.4rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .logo span { color: var(--text); font-weight: 700; }
+  .logo small {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .stats-bar strong { color: var(--gold); }
+
+  #intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .intro-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gold);
+    padding: 0.3rem 0.8rem;
+    display: inline-block;
+  }
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, var(--text) 40%, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .intro-author {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .intro-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .intro-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .meta-item { text-align: center; }
+
+  .meta-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: var(--gold);
+    display: block;
+  }
+
+  .meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* Topic selector */
+  .topic-select {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .topic-btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    padding: 0.55rem 1.2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .topic-btn:hover, .topic-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .btn-start {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 1rem 3rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-start::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+
+  .btn-start:hover::after { transform: translateX(0); }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.35); }
+  .btn-start:active { transform: translateY(0); }
+
+  #quiz {
+    display: none;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .q-category {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem;
+  }
+
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    color: var(--text);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .option {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 1rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+
+  .option:hover::before { transform: scaleY(1); }
+
+  .option:hover {
+    border-color: var(--gold);
+    background: #232323;
+    transform: translateX(4px);
+  }
+
+  .opt-letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gold);
+    min-width: 20px;
+    margin-top: 2px;
+  }
+
+  .opt-text {
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .option.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    transform: translateX(4px);
+  }
+
+  .option.correct::before { background: var(--correct); transform: scaleY(1); }
+  .option.correct .opt-letter { color: var(--correct); }
+
+  .option.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+  }
+
+  .option.wrong::before { background: var(--wrong); transform: scaleY(1); }
+  .option.wrong .opt-letter { color: var(--wrong); }
+  .option.disabled { cursor: default; pointer-events: none; }
+
+  .feedback {
+    margin-top: 1.5rem;
+    padding: 1rem 1.4rem;
+    border-left: 3px solid;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .feedback.correct { border-color: var(--correct); background: var(--correct-bg); color: #6fcf97; }
+  .feedback.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: #eb8888; }
+  .feedback-icon { font-size: 1.1rem; margin-right: 0.5rem; }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+  }
+
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 0.75rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .btn-next:hover { background: var(--gold); color: #000; }
+
+  #results {
+    display: none;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .result-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .score-display {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(4rem, 12vw, 8rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .score-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  .result-msg {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 3rem;
+    border: 1px solid var(--border);
+  }
+
+  .result-cell { background: var(--card); padding: 1.5rem 1rem; }
+
+  .cell-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .cell-num.g { color: var(--correct); }
+  .cell-num.r { color: var(--wrong); }
+  .cell-num.b { color: var(--gold); }
+
+  .cell-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  .btn-retry {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-retry:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.35); }
+
+  .btn-home {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 1rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-home:hover { background: rgba(201,168,76,0.1); }
+
+  @media (max-width: 600px) {
+    header { padding: 1rem 1.2rem; }
+    .stats-bar { gap: 1rem; font-size: 0.72rem; }
+    #quiz { padding: 1.5rem 1rem; }
+    .intro-meta { gap: 1.5rem; }
+    .topic-select { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    JAHON <span>TARIXI</span>
+    <small>Muallif: Yuldashev Kh</small>
+  </div>
+  <div class="stats-bar" id="headerStats" style="display:none">
+    <span>Savol: <strong id="hQ">1</strong></span>
+    <span>To'g'ri: <strong id="hC">0</strong></span>
+    <span>Xato: <strong id="hW">0</strong></span>
+  </div>
+</header>
+
+<!-- Intro -->
+<div id="intro">
+  <div class="intro-label">Fan: Jahon tarixi</div>
+  <h1 class="intro-title">Bilimingizni<br>sinab ko'ring</h1>
+  <div class="intro-author">Muallif: Yuldashev Kh &nbsp;·&nbsp; XIX–XX asr</div>
+  <p class="intro-sub">Xitoy, Koreya, Hindiston, Janubi-Sharqiy Osiyo va boshqa mavzular bo'yicha testlar. Mavzuni tanlang yoki barcha savollarni birga ishlang.</p>
+
+  <div class="topic-select" id="topicSelect">
+    <button class="topic-btn active" onclick="selectTopic('all', this)">Hammasi</button>
+    <button class="topic-btn" onclick="selectTopic('xitoy', this)">Xitoy</button>
+    <button class="topic-btn" onclick="selectTopic('koreya', this)">Koreya</button>
+    <button class="topic-btn" onclick="selectTopic('hindiston', this)">Hindiston</button>
+    <button class="topic-btn" onclick="selectTopic('jso', this)">JSO mamlakatlari</button>
+  </div>
+
+  <div class="intro-meta">
+    <div class="meta-item">
+      <span class="meta-num" id="totalCount">—</span>
+      <span class="meta-label">Savol</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-num">4</span>
+      <span class="meta-label">Variant</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-num">—</span>
+      <span class="meta-label">Vaqt chegarasi</span>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">TESTNI BOSHLASH →</button>
+</div>
+
+<!-- Quiz -->
+<div id="quiz">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="q-meta">
+    <span class="q-num" id="qNum">Savol 1 / —</span>
+    <span class="q-category" id="qCategory">Jahon tarixi</span>
+  </div>
+  <div class="question-text" id="qText"></div>
+  <div class="options" id="optionsContainer"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="nav-row">
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Keyingi savol →</button>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="results">
+  <div class="result-badge">Natija</div>
+  <div class="score-display" id="scoreDisplay">0%</div>
+  <div class="score-label" id="scoreLabel">Jami ball</div>
+  <p class="result-msg" id="resultMsg"></p>
+  <div class="result-grid">
+    <div class="result-cell"><span class="cell-num g" id="rCorrect">0</span><span class="cell-label">To'g'ri</span></div>
+    <div class="result-cell"><span class="cell-num r" id="rWrong">0</span><span class="cell-label">Xato</span></div>
+    <div class="result-cell"><span class="cell-num b" id="rTotal">0</span><span class="cell-label">Jami</span></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-home" onclick="goHome()">← Bosh sahifa</button>
+    <button class="btn-retry" onclick="restart()">QAYTA ↺</button>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  // XITOY
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Nankin shartnomasiga ko'ra Xitoy tovon sifatida necha million lyan kumush to'lashi kerak edi?", options: ["10 million lyan","15 million lyan","21 million lyan","30 million lyan"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "1844 yili Xitoy bilan qaysi davlat shartnoma imzolab, каботаж yuk tashuviga huquq oldi?", options: ["Fransiya","Rossiya","AQSH","Germaniya"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Ikkinchi Afyun urushi qachon boshlandi?", options: ["1853-1857 yillar","1854-1858 yillar","1856-1860 yillar","1857-1861 yillar"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Taypin harakatiga kim boshchilik qildi?", options: ["Lin Tszesu'y","Vey Yuan","Xun Su'tsyu'an'","Li Xuanchjan"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Taypin so'zi nimani anglatadi?", options: ["Katta g'alaba","Yangi tartib","Buyuk huzur-halovatli samo davlati","Ozod xalq"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Taypin harakatida Xun Su'tsyu'an qanday unvon oldi?", options: ["Prezident","Imperator","Tyan' van","Bosh qo'mondon"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "1858 yili imzolangan Tyantszin shartnomasida Rossiyaga nima berildi?", options: ["Shanxay porti","Xitoyda erkin savdo huquqi","Ochiq portlarda savdo qilish","Xitoyning shimoliy qismi"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "1858 yili imzolangan Aygun shartnomasi bo'yicha Amur daryosining qaysi qirg'og'i Rossiyaga berildi?", options: ["Sharqiy qirg'og'i","Janubiy qirg'og'i","Chap qirg'og'i","O'ng qirg'og'i"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "O'z-o'zini kuchaytirish siyosati Xitoy tarixida qanday nomlanadi?", options: ["Tsin tszyan","Xin tsin","Tszi tsyan","Guo tszyan"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "O'z-o'zini kuchaytirish siyosatini amalga oshirishning uchinchi bosqichi qachon yakunlandi?", options: ["1890 yili","1893 yili","1895 yili","1898 yili"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Tszunliyamen qachon tashkil qilindi?", options: ["1859 yil yanvarda","1860 yil yanvarda","1861 yil yanvarda","1862 yil yanvarda"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "1897 yili Germaniya Xitoydan qaysi ko'rfazni 99 yil muddatga ijaraga oldi?", options: ["Syangan ko'rfazi","Veyxayvey ko'rfazi","Tszyaorjou ko'rfazi","Lüshun ko'rfazi"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Islohot yuz kuni qachon boshlandi?", options: ["1897 yil iyunda","1898 yil yanvarda","1898 yil iyundan","1899 yil yanvarda"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Islohot yuz kuni davrida qancha farmon qabul qilindi?", options: ["30 ta farmon","50 ta farmon","60 ta farmon","100 ta farmon"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Sun' Yatsen Xitoy tiklanish ittifoqini qachon tuzdi?", options: ["1892 yili","1893 yili","1894 yili","1895 yili"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Sun' Yatsen Xitoy tiklanish ittifoqini qayerda tuzdi?", options: ["Gonkong","Shanxay","Gavay orollarida","Yaponiyada"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Sinxay inqilobi qachon boshlandi?", options: ["1909 yili","1910 yili","1911 yili","1912 yili"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Sinxay inqilobi natijasida qaysi sulola ag'darildi?", options: ["Min sulolasi","Tan sulolasi","Tsinlar sulolasi","Sun sulolasi"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Sun' Yatsen 1912 yili qanday partiyaga asos soldi?", options: ["Xalq partiyasi","Milliy demokratiya partiyasi","Gomindan","Islohotlar partiyasi"], correct: 2 },
+  { topic: 'xitoy', cat: 'Xitoy tarixi', q: "Xitoyning XIX asr oxirgi choragi tashqi siyosatida asosiy o'zgarish nima edi?", options: ["Xitoy barcha teng huquqli shartnomalarga erisha oldi","Xitoy Yaponiyaga qarshi muvaffaqiyatli urush olib bordi","Xitoy G'arb davlatlarining yarim mustamlakasiga aylandi","Xitoy Osiyo liderligini mustahkamladi"], correct: 2 },
+
+  // HINDISTON
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Britaniya Hindistonining poytaxti qaysi shahar edi?", options: ["Dehli","Bombey","Kalkutta","Madras"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Ost-Indiya kompaniyasi Hindistondagi hududlarni nechta prezidentlikka bo'lgan?", options: ["2 ta","4 ta","3 ta","5 ta"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Ikkinchi ingliz-maratx urushi qachon bo'lib o'tdi?", options: ["1798-1802 yillar","1800-1804 yillar","1803-1805 yillar","1805-1808 yillar"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Birinchi ingliz-sikh urushi qachon bo'lib o'tdi?", options: ["1842-1844 yillar","1843-1845 yillar","1845-1846 yillar","1847-1849 yillar"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Ikkinchi ingliz-sikh urushi qachon bo'lib o'tdi?", options: ["1845-1847 yillar","1846-1848 yillar","1848-1849 yillar","1850-1851 yillar"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "1813 yili Ost-Indiya kompaniyasi Xartiyasining amali tugagach qanday o'zgarish bo'ldi?", options: ["Kompaniya tugatilib Hindiston parlament nazoratiga o'tdi","Kompaniya yangi huquqlar oldi","Hindiston erkin savdo zonasi deb e'lon qilindi","Kompaniyaga yana monopol huquq berildi"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Zaindoriy tizimi kim tomonidan joriy qilingan edi?", options: ["Lord Makauley tomonidan","Lord Okland tomonidan","General-gubernator Ch. Kornuollis tomonidan","Lord Dalhauzi tomonidan"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Ram Moxan Roy qachon tug'ilgan?", options: ["1760 yili","1770 yili","1772 yili","1780 yili"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Braxma Samadj (Braxma jamiyati) qachon tashkil qilindi?", options: ["1820 yili","1825 yili","1828 yili","1830 yili"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "1857-1859 yillardagi Hindiston xalq qo'zg'oloni boshlanishiga bevosita bahona bo'lgan voqea nima?", options: ["Yangi soliqlarning joriy etilishi","Hindlar uchun ta'limni cheklash","Sipohiylarga sigir yog'i bilan moylanmish o'qlarning tarqatilishi","Hind zodagonlarining huquqlarini cheklash"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "1857 yilgi qo'zg'olon qachon boshlandi?", options: ["1857 yil 5 may kuni","1857 yil 8 may kuni","1857 yil 10 may kuni","1857 yil 15 may kuni"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "1857 yilgi qo'zg'olonda Dehlidagi boburiylar avlodidan bo'lgan kim podshoh deb e'lon qilindi?", options: ["Shoh Olam II","Akbar shoh","Bahadur shoh","Muhammad shoh"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "1857 yilgi qo'zg'olonni bostirish uchun Angliyadan kim boshchiligida qo'shin keldi?", options: ["General Uellsli","Lord Dalhauzi","General Kolin Kempbell","Lord Ellenborro"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Ost-Indiya kompaniyasi qachon tugatildi?", options: ["1857 yili","1858 yili","1859 yili","1860 yili"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Hindiston milliy kongressi qachon tashkil topdi?", options: ["1883 yili","1884 yili","1885 yili","1886 yili"], correct: 2 },
+  { topic: 'hindiston', cat: 'Hindiston tarixi', q: "Hindiston milliy kongressining ta'sis majlisi qayerda bo'ldi?", options: ["Kalkutta","Dehli","Bombey","Madras"], correct: 2 },
+
+  // KOREYA
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "XIX asr boshlarida Koreyada Sirxak oqimining asosiy g'oyasi nima edi?", options: ["Xitoy madaniyatidan mutlaqo ajralish","G'arb ta'limini keng joriy qilish","Xitoy yutuqlaridan o'rganish va haqiqiy fanlarni rivojlantirish","Yaponiya bilan savdo aloqalarini kengaytirish"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "1811 yilgi Koreyadagi yirik qo'zg'olonga kim boshchilik qildi?", options: ["Tsoy Chje U","Kim Xon Chib","Xon Gyon Ne","Pak Chji Von"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "Koreyadagi Tonxak ta'limotini 1859 yili kim tarqata boshladi?", options: ["Xon Gyon Ne","Tevongun","Tsoy Chje U","Pak Chji Von"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "Tonxak so'zi qanday ma'noga ega?", options: ["Shimoliy ta'limot","Yangi ta'limot","Sharqiy ta'limot","Qadimiy ta'limot"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "Tevongun hokimiyatni qachon yo'qotdi?", options: ["1870 yili","1872 yili","1874 yili","1876 yili"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "Koreya bilan Yaponiya o'rtasidagi birinchi teng bo'lmagan shartnoma qachon imzolandi?", options: ["1875 yili","1875 yil","1876 yil","1877 yili"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "Kanxva orolida imzolangan shartnomaga ko'ra Koreya qancha oy ichida yangi portlar ochishi lozim edi?", options: ["10 oy","15 oy","20 oy","24 oy"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "1882 yilgi Seul qo'zg'oloni qachon boshlandi?", options: ["1882 yil 10 iyulda","1882 yil 15 iyulda","1882 yil 22 iyulda","1882 yil 30 iyulda"], correct: 2 },
+  { topic: 'koreya', cat: 'Koreya tarixi', q: "XIX asr oxirlarida Koreya 1897 yildan boshlab qanday nom bilan atala boshladi?", options: ["Chosun imperiyasi","Koryeo imperiyasi","Dexan imperiyasi","Minjok imperiyasi"], correct: 2 },
+
+  // JSO (Janubi-Sharqiy Osiyo)
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Fransiya Hindixitoy ittifoqining tuzilganligini qachon e'lon qildi?", options: ["1882 yili","1885 yili","1887 yili","1893 yili"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Fransiya Hindixitoy ittifoqi tarkibiga Vyetnam nechta qismda kirdi?", options: ["Beshta qismdan iborat","To'rtta qismdan iborat","Uchta qismdan iborat","Ikkita qismdan iborat"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Kambodja XVIII asrning yarmidan to fransuzlar mustamlaka o'rnatguncha qaysi ikki davlatning syuzereniteti ostida bo'ldi?", options: ["Fransiya va Buyuk Britaniya","Xitoy va Yaponiya","Vyetnam va Siam","Rossiya va Fransiya"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Ang Duong Kambodja tashqi siyosatida ikki kuchli davlat o'rtasida nimani amalga oshirishga harakat qildi?", options: ["Harbiy ittifoq tuzishni","Urush e'lon qilishni","Murosa o'rnatishni","Mustaqillikni e'lon qilishni"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Ang Duong davlatning qaysi sohasiga asosiy e'tiborni qaratdi?", options: ["Harbiy islohot","Diniy islohotlar","Iqtisodiyotni isloh qilish","Tashqi siyosat"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Kambodja XIX asrning o'rtalariga kelib yer egaligi tizimi jihatdan qanday xususiyatga ega bo'ldi?", options: ["Yer to'liq xususiy mulk hisoblandi","Yer chet elliklarga berildi","Yer yuridik jihatdan oliy hukmdorning mulki hisoblandi","Yer jamoaga tegishli bo'ldi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1860 yili Ang Duong vafot etgandan so'ng Kambodja taxtiga kim keldi?", options: ["Ang Chun","Ang Chanba","Norodom","Suryavarman"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Fransuzlarning Kambodja ichki ishlariga aralashuvi qachon boshlandi?", options: ["1860 yili","1865 yili","1862 yili","1858 yili"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1863 yil avgustida frantsuzlar vakili La Grand'er Kambodja ustidan qanday shartnoma imzolashga erishdi?", options: ["Erkin savdo shartnomasi","Harbiy ittifoq shartnomasi","Fransiya-Kambodja protektorat shartnomasi","Do'stlik va hamkorlik shartnomasi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1863 yilgi Fransiya-Kambodja shartnomasi asosida Fransiya imperatori kimning nomi bilan atalgan?", options: ["Napoleon I","Napoleon II","Napoleon III","Napoleon IV"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1867 yili imzolangan frantsuz-siam shartnomasi bo'yicha Kambodjaning qaysi provinsiyalari Siamga qo'shib berildi?", options: ["Prey Veng va Kampot","Siem Reap va Kompong Thom","Battambang va Angkor","Kompong Cham va Kratye"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Kambodjada frantsuzlar pozitsiyasining mustahkamlanishida qaysi shartnomalari muhim ahamiyatga ega bo'ldi?", options: ["1875 va 1879 yilgi shartnomalari","1878 va 1880 yilgi shartnomalari","1882 va 1884 yilgi shartnomalari","1886 va 1888 yilgi shartnomalari"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1884 yilgi shartnoma Kambodjaga nima olib keldi?", options: ["Mustaqillik e'lon qilindi","Yangi hukumat tuzildi","Kambodja o'z suverenitetidan mahrum qilindi","Yangi protokol imzolandi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1884-1896 yillar oralig'ida Kambodjada frantsuz hokimiyatiga qarshi harakat qanday tarzda olib borildi?", options: ["Diplomatik muzokaralar yo'li bilan","Iqtisodiy boyqot yo'li bilan","Partizanlar kurashi yo'li bilan","Xalqaro sud orqali"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "XVIII asrning 70-80-yillarida Siam Vyentyana nisbatan qanday munosabat o'rnatdi?", options: ["Ittifoqchi va hamkor sifatida","Savdo sherigi sifatida","Bostirib kirdi va o'z vassaliga aylantirdi","Diplomatik munosabat o'rnatdi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Laosning Vyentyan davlatida eng mashhur hukmdorlardan biri bo'lgan Chao Anu qachon taxtga keldi?", options: ["1798 yili","1802 yili","1805 yili","1810 yili"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Chao Anu Siamga qarshi urush qachon boshladi va natijasi qanday bo'ldi?", options: ["1824 yili boshladi, g'alaba qozondi","1820 yili boshladi, sulh tuzdi","1826 yili boshladi, qo'shinlari tor-mor qilindi","1828 yili boshladi, chekinishga majbur bo'ldi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Chao Anu siamliklar tomonidan asir olingan yil qaysi?", options: ["1828 yili","1830 yili","1831 yili","1833 yili"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1872 yili, Manta Turat o'lgandan uch yil o'tgach, Luang Prabang taxtiga kim keldi?", options: ["Ang Duong","Chao Anu","Un Kham","Norodom"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1886 yili Fransiya va Siam o'rtasida imzolangan shartnoma natijasida Luang Prabangda qanday idora ochildi?", options: ["Harbiy qo'mondonlik idorasi","Savdo vakolatxonasi","Frantsuzlarning konsullik idorasi","Pochta idorasi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1893 yil aprelida Laos hududiga qo'shin kiritgan qaysi davlatning generali edi?", options: ["Siam general-gubernatori","Xitoy generali","Hindixitoy ittifoqining frantsuz general-gubernatori","Buyuk Britaniya generali"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Laos hududining uchta ma'muriy qismga ajratilishi qachon kuchga kirdi?", options: ["1893 yil 2 noyabrdan","1893 yil 2 yanvardan","1893 yil 2 dekabr dan","1893 yil 2 martdan"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1895 yili Laos hududi nechta avtonom rayonga ajratildi?", options: ["Uchta avtonom rayonga","To'rtta avtonom rayonga","Ikkita avtonom rayonga","Bitta avtonom rayonga"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Myanma (Birma)ning XVIII asr oxiri - XIX asr boshlarida qaysi ikkita davlat e'tiborini o'ziga jalb qildi?", options: ["Fransiya va Hollandiya","Xitoy va Yaponiya","Buyuk Britaniya va Fransiya","Rossiya va Germaniya"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1824 yil 5 martda Buyuk Britaniya Birmaga urush e'lon qildi. Tinchlik shartnomasi qachon imzolandi?", options: ["1824 yil oktabr","1825 yil may","1826 yil fevral","1827 yil iyul"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Birinchi ingliz-birma urushi natijasida Birma inglizlar foydasiga qaysi hududlardan voz kechdi?", options: ["Pegu va Mandalay","Arakan va Tanasserim","Arakan, Tanasserim, Assam va Manipur","Irravadi va Sittang"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1852 yili boshlanib inglizlar tomonidan Pegu bosib olingan urush qaysi hisoblanadi?", options: ["Birinchi ingliz-birma urushi","Uchinchi ingliz-birma urushi","Ikkinchi ingliz-birma urushi","To'rtinchi ingliz-birma urushi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Yangi monarx Mindon Birmada joriy qilgan soliq tizimi qancha foizli edi?", options: ["5 foizli","15 foizli","10 foizli","20 foizli"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1886 yil 1 yanvarida qanday manifest e'lon qilindi?", options: ["Birma monarxiyasining tashkil topishi to'g'risida","Birma federatsiyasi haqida","Birmani Buyuk Britaniya mustamlakasiga aylantirish to'g'risida","Birma mustaqilligi haqida"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "1897 yili Birmada inglizlarga muxolifatda bo'lgan qaysi siyosiy tashkilot tuzildi?", options: ["Myanma Ozodlik Partiyasi","Birma Milliy Kengashi","Buddaviylikni himoya qilish jamiyati","Birma Xalq Ittifoqi"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Indoneziya 1802 yili qaysi davlatning protektoratiga aylantirildi?", options: ["Buyuk Britaniya","Ispaniya","Fransiya","Germaniya"], correct: 2 },
+  { topic: 'jso', cat: 'Janubi-Sharqiy Osiyo', q: "Napolyon Bonaparte marshal Dandels'ni Indoneziya gubernatori etib qachon tayinladi?", options: ["1805 yili","1806 yili","1807 yili","1808 yili"], correct: 2 },
+];
+
+let selectedTopic = 'all';
+let prepared = [];
+let current = 0;
+let score = 0;
+let wrong = 0;
+let answered = false;
+
+function getFiltered() {
+  if (selectedTopic === 'all') return allQuestions;
+  return allQuestions.filter(q => q.topic === selectedTopic);
+}
+
+function updateCount() {
+  document.getElementById('totalCount').textContent = getFiltered().length;
+}
+
+function selectTopic(topic, btn) {
+  selectedTopic = topic;
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateCount();
+}
+
+updateCount();
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepareQuestion(q) {
+  const indices = shuffle([0, 1, 2, 3]);
+  const newCorrect = indices.indexOf(q.correct);
+  return {
+    q: q.q,
+    cat: q.cat,
+    options: indices.map(i => q.options[i]),
+    correct: newCorrect
+  };
+}
+
+function startQuiz() {
+  const filtered = getFiltered();
+  prepared = shuffle(filtered).map(prepareQuestion);
+  current = 0; score = 0; wrong = 0;
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  document.getElementById('headerStats').style.display = 'flex';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = prepared[current];
+  answered = false;
+  const total = prepared.length;
+
+  document.getElementById('progressFill').style.width = ((current / total) * 100) + '%';
+  document.getElementById('qNum').textContent = `Savol ${current + 1} / ${total}`;
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('hQ').textContent = current + 1;
+  document.getElementById('hC').textContent = score;
+  document.getElementById('hW').textContent = wrong;
+  document.getElementById('qText').textContent = q.q;
+
+  const letters = ['A', 'B', 'D', 'E'];
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="opt-letter">${letters[i]}</span><span class="opt-text">${opt}</span>`;
+    div.onclick = () => selectOption(i, div);
+    container.appendChild(div);
+  });
+
+  const feedback = document.getElementById('feedback');
+  feedback.style.display = 'none';
+  feedback.className = 'feedback';
+  document.getElementById('btnNext').style.display = 'none';
+}
+
+function selectOption(idx, el) {
+  if (answered) return;
+  answered = true;
+
+  const q = prepared[current];
+  const options = document.querySelectorAll('.option');
+  options.forEach(o => o.classList.add('disabled'));
+
+  const feedback = document.getElementById('feedback');
+
+  if (idx === q.correct) {
+    el.classList.add('correct');
+    score++;
+    feedback.className = 'feedback correct';
+    feedback.innerHTML = `<span class="feedback-icon">✓</span> To'g'ri javob!`;
+  } else {
+    el.classList.add('wrong');
+    wrong++;
+    options[q.correct].classList.add('correct');
+    feedback.className = 'feedback wrong';
+    feedback.innerHTML = `<span class="feedback-icon">✗</span> Noto'g'ri. To'g'ri javob: <strong>${['A','B','D','E'][q.correct]}</strong> — ${q.options[q.correct]}`;
+  }
+
+  feedback.style.display = 'block';
+  document.getElementById('hC').textContent = score;
+  document.getElementById('hW').textContent = wrong;
+
+  const btn = document.getElementById('btnNext');
+  btn.style.display = 'block';
+  btn.textContent = current + 1 < prepared.length ? 'Keyingi savol →' : 'Natijani ko\'rish →';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= prepared.length) {
+    showResults();
+  } else {
+    document.getElementById('quiz').style.animation = 'none';
+    document.getElementById('quiz').offsetHeight;
+    document.getElementById('quiz').style.animation = 'fadeIn 0.35s ease';
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  const pct = Math.round((score / prepared.length) * 100);
+  document.getElementById('scoreDisplay').textContent = pct + '%';
+  document.getElementById('scoreLabel').textContent = `${score} / ${prepared.length} to'g'ri javob`;
+  document.getElementById('rCorrect').textContent = score;
+  document.getElementById('rWrong').textContent = wrong;
+  document.getElementById('rTotal').textContent = prepared.length;
+
+  let msg = '';
+  if (pct >= 90) msg = "Ajoyib natija! Siz jahon tarixi bo'yicha chuqur bilimga egasiz.";
+  else if (pct >= 75) msg = "Yaxshi natija! Bilimlaringizni yanada mustahkamlashingiz mumkin.";
+  else if (pct >= 50) msg = "O'rta natija. Mavzularni qayta o'rganib chiqishingizni tavsiya etamiz.";
+  else msg = "Bilimlaringizni mustahkamlashingiz kerak. Qayta urinib ko'ring!";
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+function restart() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  prepared = shuffle(getFiltered()).map(prepareQuestion);
+  current = 0; score = 0; wrong = 0;
+  renderQuestion();
+}
+
+function goHome() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('intro').style.display = 'flex';
+  document.getElementById('headerStats').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0';
+  updateCount();
+}
+</script>
+</body>
+</html>
